@@ -28,4 +28,22 @@ class Controller extends BaseController
         ];
         return response()->json($response_data);
     }
+
+
+    /**
+     * Define a unsuccessful response format
+     * @param $data
+     * @param string $message
+     * @param $code
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function unsuccess($data, string $message = 'unsuccess', $code = 0)
+    {
+        $response_data = [
+            'data' => $data,
+            'code' => $code,
+            'msg' => $message,
+        ];
+        return response()->json($response_data);
+    }
 }

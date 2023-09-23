@@ -19,3 +19,8 @@ Route::get('/', function () {
 
 Route::get('/test-success-response', [\App\Http\Controllers\TestController::class, 'testSuccessResponse']);
 Route::get('/test-exception-response', [\App\Http\Controllers\TestController::class, 'testExceptionResponse']);
+
+
+Route::get('/return-request-content', [\App\Http\Controllers\TestController::class, 'returnRequestContent']);
+Route::get('/return-expected-error', [\App\Http\Controllers\TestController::class, 'returnExpectedError']);
+Route::get('/return-unexpected-error', [\App\Http\Controllers\TestController::class, 'returnUnexpectedError']);
