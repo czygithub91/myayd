@@ -27,4 +27,20 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+
+    /**
+     * rewrite render function, if an exception occurs, return json format
+     * @param $request
+     * @param Throwable $e
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response
+     */
+    public function render($request, Throwable $e)
+    {
+        return response()->json([
+            'code'=>$e->getCode(),
+            'data' =>[],
+            'msg' => $e->getMessage(),
+        ]);
+    }
 }

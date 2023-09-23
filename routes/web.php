@@ -16,3 +16,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/test-success-response', [\App\Http\Controllers\TestController::class, 'testSuccessResponse']);
+Route::get('/test-exception-response', [\App\Http\Controllers\TestController::class, 'testExceptionResponse']);
