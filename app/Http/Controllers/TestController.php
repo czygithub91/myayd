@@ -76,4 +76,46 @@ class TestController extends Controller
             throw new \Exception("something wrong");
         }
     }
+
+
+    /**
+     * Check whether the string is valid.
+     * @param Request $request
+     * @return string
+     */
+    public function checkValidString(Request $request)
+    {
+        $str = $request->input('str');
+        $arr = [
+            ')' => '(',
+            ']' => '[',
+            '}' => '{',
+        ];
+        $count = strlen($str);
+        //The number of characters is not even, return incorrect string
+        if ($count % 2 != 0) {
+            return $this->unsuccess([], 'incorrect string');
+        }
+        $strack = [];
+        for ($i = 0; $i < $count; $i++) {
+            //right parenthesis match with left parenthesis in $strack
+            if (isset($arr[$str[$i]])) {
+                $tmp = array_pop($strack);
+                // when not match, return incorrect string
+                if ($arr[$str[$i]] != $tmp) {
+                    return $this->unsuccess([], 'incorrect string');
+                }
+            } else {
+                //put left parenthesis into $strack
+                $strack[] = $str[$i];
+            }
+        }
+
+        // when $strack is empty ,the string is correct
+        if (empty($strack)) {
+            return $this->success([], 'correct string');
+        } else {
+            return $this->unsuccess([], 'incorrect string');
+        }
+    }
 }
