@@ -2,7 +2,11 @@
 
 namespace App\Exceptions;
 
+use App\Models\ExceptionInfo;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Response as HttpResponse;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -37,10 +41,53 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e)
     {
-        return response()->json([
-            'code'=>$e->getCode(),
-            'data' =>[],
-            'msg' => $e->getMessage(),
-        ]);
+
+        $this->writeLog($e); //write log into mysql.
+
+        // handle http exception like 404 not found
+        //requirement 4-c
+        if ($e instanceof HttpException) {
+            return response()->json([
+                'code' => $e->getCode(),
+                'data' => [],
+                'msg' => $e->getMessage(),
+            ]);
+        }
+
+        //requirement 4-a
+        if (env('APP_DEBUG')) {
+            return response()->json([
+                'code' => $e->getCode(),
+                'data' => [],
+                'msg' => $e->getMessage(),
+                'trace' => $e->getTrace()
+            ]);
+        } else { //requirement 4-b
+            return response()->json([
+                'code' => HttpResponse::HTTP_INTERNAL_SERVER_ERROR,
+                'data' => [],
+                'msg' => 'Internal Server error',
+            ]);
+        }
+
+    }
+
+    /**
+     * write log into mysql.
+     * @param $request
+     * @param $response_data
+     * @return void
+     */
+    private function writeLog($e)
+    {
+        $arr = [
+            'message' => $e->getMessage(),
+            'code' => $e->getCode(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace_str' => $e->getTraceAsString()
+        ];
+        ExceptionInfo::create($arr);
+        return;
     }
 }
