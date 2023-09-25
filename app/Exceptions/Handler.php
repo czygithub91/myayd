@@ -3,10 +3,10 @@
 namespace App\Exceptions;
 
 use App\Models\ExceptionInfo;
+use Carbon\Carbon;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Response as HttpResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -41,7 +41,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e)
     {
-
         $this->writeLog($e); //write log into mysql.
 
         // handle http exception like 404 not found
@@ -80,14 +79,14 @@ class Handler extends ExceptionHandler
      */
     private function writeLog($e)
     {
-        $arr = [
-            'message' => $e->getMessage(),
-            'code' => $e->getCode(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace_str' => $e->getTraceAsString()
-        ];
-        ExceptionInfo::create($arr);
+        $exception_info = new ExceptionInfo();
+        $exception_info->setTable('exception_info_' . Carbon::now()->format('Ymd'));
+        $exception_info->message = $e->getMessage();
+        $exception_info->code = $e->getCode();
+        $exception_info->file = $e->getFile();
+        $exception_info->line = $e->getLine();
+        $exception_info->trace_str = $e->getTraceAsString();
+        $exception_info->save();
         return;
     }
 }
